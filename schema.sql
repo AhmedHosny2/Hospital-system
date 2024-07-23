@@ -1,17 +1,17 @@
 -- Drop tables if they exist
-DROP TABLE IF EXISTS medical_supplies_management CASCADE;
-DROP TABLE IF EXISTS medical_records CASCADE;
-DROP TABLE IF EXISTS billings CASCADE;
-DROP TABLE IF EXISTS room_reservation CASCADE;
-DROP TABLE IF EXISTS room CASCADE;
-DROP TABLE IF EXISTS medical_supplies CASCADE;
-DROP TABLE IF EXISTS appointment CASCADE;
-DROP TABLE IF EXISTS department_management CASCADE;
-DROP TABLE IF EXISTS department CASCADE;
-DROP TABLE IF EXISTS doctor CASCADE;
-DROP TABLE IF EXISTS stuff CASCADE;
-DROP TABLE IF EXISTS patient CASCADE;
-DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS medical_supplies_management ;
+DROP TABLE IF EXISTS medical_records ;
+DROP TABLE IF EXISTS billings ;
+DROP TABLE IF EXISTS room_reservation ;
+DROP TABLE IF EXISTS room ;
+DROP TABLE IF EXISTS medical_supplies ;
+DROP TABLE IF EXISTS appointment ;
+DROP TABLE IF EXISTS department_management ;
+DROP TABLE IF EXISTS department ;
+DROP TABLE IF EXISTS doctor ;
+DROP TABLE IF EXISTS staff ;
+DROP TABLE IF EXISTS patient ;
+DROP TABLE IF EXISTS users ;
 
 
 -- Drop ENUM types if they exist
@@ -32,6 +32,7 @@ CREATE TYPE gender_enum AS ENUM ('Male', 'Female');
 CREATE TYPE room_enum AS ENUM ('ICU', 'General', 'Private');
 
 -- Create tables
+-- Parent table with common user information
 CREATE TABLE users (
     uid SERIAL PRIMARY KEY,
     firstName VARCHAR(50),
@@ -40,25 +41,28 @@ CREATE TABLE users (
     phoneNumber VARCHAR(50)
 );
 
+-- Child table for patients with additional patient-specific information
 CREATE TABLE patient (
     uid INT PRIMARY KEY,
     EmergencyContact VARCHAR(50),
     DateOfBirth DATE,
     gender gender_enum,
     address VARCHAR(200),
-    FOREIGN KEY (uid) REFERENCES users(uid)
+    FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE
 );
 
-CREATE TABLE stuff (
+-- Child table for staff (or employees) with additional staff-specific information
+CREATE TABLE staff (
     uid INT PRIMARY KEY,
     role VARCHAR(100),
-    FOREIGN KEY (uid) REFERENCES users(uid)
+    FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE
 );
 
+-- Child table for doctors with additional doctor-specific information
 CREATE TABLE doctor (
     uid INT PRIMARY KEY,
     Specialization VARCHAR(100),
-    FOREIGN KEY (uid) REFERENCES users(uid)
+    FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE
 );
 
 CREATE TABLE department (
@@ -97,9 +101,9 @@ CREATE TABLE medical_supplies (
 CREATE TABLE medical_supplies_management (
     management_id SERIAL PRIMARY KEY,
     suppliesId INT,
-    stuffId INT,
+    staffId INT,
     FOREIGN KEY (suppliesId) REFERENCES medical_supplies(suppliesId),
-    FOREIGN KEY (stuffId) REFERENCES stuff(uid)
+    FOREIGN KEY (staffId) REFERENCES staff(uid)
 );
 
 CREATE TABLE room (
@@ -116,7 +120,7 @@ CREATE TABLE room_reservation (
     PRIMARY KEY (bookedBy, patientId, roomId),
     FOREIGN KEY (roomId) REFERENCES room(roomId),
     FOREIGN KEY (patientId) REFERENCES patient(uid),
-    FOREIGN KEY (bookedBy) REFERENCES stuff(uid)
+    FOREIGN KEY (bookedBy) REFERENCES staff(uid)
 );
 
 CREATE TABLE medical_records (
@@ -137,3 +141,4 @@ CREATE TABLE billings (
     patientId INT,
     FOREIGN KEY (patientId) REFERENCES patient(uid)
 );
+
