@@ -1,4 +1,3 @@
--- Drop tables if they exist
 DROP TABLE IF EXISTS medical_supplies_management ;
 DROP TABLE IF EXISTS medical_records ;
 DROP TABLE IF EXISTS billings ;
@@ -107,8 +106,7 @@ CREATE TABLE medical_supplies_management (
 );
 
 CREATE TABLE room (
-    roomId SERIAL PRIMARY KEY,
-    RoomNumber INT,
+    RoomNumber INT primary key,
     RoomType room_enum,
     AvailabilityStatus BOOLEAN
 );
@@ -118,7 +116,7 @@ CREATE TABLE room_reservation (
     patientId INT,
     roomId INT,
     PRIMARY KEY (bookedBy, patientId, roomId),
-    FOREIGN KEY (roomId) REFERENCES room(roomId),
+    FOREIGN KEY (roomId) REFERENCES room(RoomNumber),
     FOREIGN KEY (patientId) REFERENCES patient(uid),
     FOREIGN KEY (bookedBy) REFERENCES staff(uid)
 );
