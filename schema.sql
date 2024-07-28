@@ -184,4 +184,56 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- test data 
-update medical_supplies set quantity = 5 where suppliesId = 1;
+-- update medical_supplies set quantity = 5 where suppliesId = 1;
+
+-- Search for users by first name and last name
+CREATE OR REPLACE FUNCTION search_users_by_name(
+    search_first_name VARCHAR(50),
+    search_last_name VARCHAR(50)
+)
+RETURNS TABLE(uid INT, firstName VARCHAR(50), lastName VARCHAR(50), email VARCHAR(100), phoneNumber VARCHAR(50)) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT u.uid, u.firstName, u.lastName, u.email, u.phoneNumber
+    FROM users u
+    WHERE CONCAT(u.firstName, ' ', u.lastName) ILIKE '%' || search_first_name || '%';
+    END;
+$$ LANGUAGE plpgsql;
+
+
+-- test data
+-- select * from search_users_by_name('Ahmed', '');
+
+
+-- search for appointments by 
+CREATE OR REPLACE FUNCTION search_appointments(
+    search_date DATE DEFAULT NULL,
+    search_reason TEXT DEFAULT NULL
+)
+RETURNS TABLE(appointmentId INT, AppointmentDate DATE, AppointmentTime TIME, ReasonForVisit TEXT, patientId INT, doctorId INT) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT a.appointmentId, a.AppointmentDate, a.AppointmentTime, a.ReasonForVisit, a.patientId, a.doctorId
+    FROM appointment a
+    WHERE (search_date IS NULL OR a.AppointmentDate = search_date)
+      AND (search_reason IS NULL OR a.ReasonForVisit ILIKE '%' || search_reason || '%');
+END;
+$$ LANGUAGE plpgsql;
+-- test data
+-- select * from search_appointments('2024-08-01', 'Routine Checkup');
+
+
+-- search for medical supplies 
+CREATE OR REPLACE FUNCTION search_medical_supplies(
+    search_name TEXT DEFAULT NULL
+)
+RETURNS TABLE(suppliesId INT, SupplyName TEXT, Quantity INT, Supplier VARCHAR(100), PurchaseDate DATE, ExpiryDate DATE) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT ms.suppliesId, ms.SupplyName, ms.Quantity, ms.Supplier, ms.PurchaseDate, ms.ExpiryDate
+    FROM medical_supplies ms
+    WHERE (search_name IS NULL OR ms.SupplyName ILIKE '%' || search_name || '%');
+END;
+$$ LANGUAGE plpgsql;
+-- test data
+-- select * from search_medical_supplies('Aspirin');
