@@ -140,6 +140,21 @@ CREATE TABLE billings (
     FOREIGN KEY (patientId) REFERENCES patient(uid)
 );
 
+-- Index 
+-- Indexes for Users
+CREATE INDEX idx_users_name ON users (firstName, lastName);
+
+
+-- Indexes for Appointments
+CREATE INDEX idx_appointments_date ON appointment (AppointmentDate);
+CREATE INDEX idx_appointments_patient_id ON appointment (patientId);
+CREATE INDEX idx_appointments_doctor_id ON appointment (doctorId);
+
+-- Indexes for Medical Supplies
+CREATE INDEX idx_supplies_name ON medical_supplies (SupplyName);
+
+
+
 -- Triggers
 CREATE Trigger update_medical_supplies_quantity
 After UPDATE of  Quantity on medical_supplies
