@@ -2,6 +2,7 @@
 
 ## ERD Diagram
 [Hospital Management System ERD](https://drive.google.com/file/d/1JpFg8Ds0S19CtuZgN8rFHqV-eWDI8YgW/view?usp=sharing)
+![Hospital system drawio](https://github.com/user-attachments/assets/0a0db5e7-139a-4d3b-bf30-5cdf023d76e3)
 
 ## Brief Description
 This Hospital Management System database is designed to efficiently manage various aspects of hospital operations. It covers patient information, staff and doctor records, appointments, medical supplies inventory, room management, medical records, and billing. The system is structured to ensure data integrity, optimize query performance, and provide flexible search capabilities across different entities.
