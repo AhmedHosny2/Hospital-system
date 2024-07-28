@@ -140,3 +140,33 @@ CREATE TABLE billings (
     FOREIGN KEY (patientId) REFERENCES patient(uid)
 );
 
+-- Triggers
+CREATE Trigger update_medical_supplies_quantity
+After UPDATE of  Quantity on medical_supplies
+For each row
+Execute FUNCTION update_medical_supplies_quantity();
+
+
+-- Function
+CREATE OR REPLACE FUNCTION update_medical_supplies_quantity()
+RETURNS TRIGGER AS $$
+DECLARE 
+	rec RECORD;
+BEGIN
+	for rec in 
+		select supplyname, sum(quantity) as total_quantity 
+		from medical_supplies 
+		group by supplyname 
+	LOOP 
+    IF rec.total_quantity <  10 THEN
+            RAISE NOTICE 'Alert: The total quantity of % is running low: %', rec.SupplyName, rec.total_quantity;
+        -- or we could  insert a record into a notification table or log using an external system like LEK stack 
+    END IF;
+    END LOOP;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- test data 
+update medical_supplies set quantity = 5 where suppliesId = 1;
